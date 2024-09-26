@@ -1,0 +1,162 @@
+unit Unit1;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls;
+
+type
+  TForm1 = class(TForm)
+    ButtonSolve: TButton;
+    ButtonExit: TButton;
+    ButtonStep: TButton;
+    EditStep: TEdit;
+    LabelStep: TLabel;
+    EditA: TEdit;
+    EditB: TEdit;
+    EditEps: TEdit;
+    LabelA: TLabel;
+    LabelB: TLabel;
+    LabelEps: TLabel;
+    LabelC: TLabel;
+    LabelIterations: TLabel;
+    procedure ButtonSolveClick(Sender: TObject);
+    procedure ButtonExitClick(Sender: TObject);
+    procedure ButtonStepClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+  Eps, a, b, c, Fa, Fb, Fc : Real;
+
+implementation
+
+{$R *.dfm}
+
+Function f(x : Real) : Real;
+begin
+  // f := x * x - 4
+  f := x*x*x - 6*x*x + 11*x - 6
+end;
+
+procedure TForm1.ButtonExitClick(Sender: TObject);
+begin
+  close;
+end;
+
+procedure TForm1.ButtonSolveClick(Sender: TObject);
+var
+  counter : Integer;
+  flag : Boolean;
+begin
+  counter := 0;
+  flag := false;
+  a := StrToFloat(EditA.text);
+  b := StrToFloat(EditB.text);
+  Eps := StrToFloat(EditEps.text);
+
+
+  repeat
+  Fa := f(a);
+  Fb := f(b);
+
+  if Abs(Fa) < Eps then
+  begin
+    c := a;
+    break;
+  end;
+
+  if Abs(Fb) < Eps then
+  begin
+    c := b;
+    break;
+  end;
+
+  if Fa * Fb < 0 then
+  begin
+    counter := counter + 1;
+    c := a + 0.5*(b - a);
+    Fc := F(c);
+    if Fa * Fc < 0 then
+      b := c
+    else
+      a := c
+  end
+  else
+  begin
+    LabelC.caption := 'Root is absent on the given interval';
+    flag := true;
+    break;
+  end;
+  until b - a < Eps;
+
+  if flag = false then
+    labelC.caption := 'Root: ' + FloatToStr(c);
+    labelIterations.caption := 'Iterations: ' + FloatToStr(counter);
+
+end;
+procedure TForm1.ButtonStepClick(Sender: TObject);
+var
+  xLeft, xRight, tabplus1, tabplus2, tabminus1, tabminus2, step : Real;
+
+begin
+  xLeft := 0;
+  xRight := 0;
+  tabplus1 := f(xRight);
+  tabminus1 := f(xLeft);
+  step := StrToFloat(EditStep.text);
+  Eps := StrToFloat(EditEps.text);
+
+  while True do
+  begin
+    xLeft := xLeft - step;
+    xRight := xRight + step;
+    tabplus2 := f(xRight);
+    tabminus2 := f(xLeft);
+
+    if Abs(tabplus2) < Eps then
+    begin
+      c := xRight;
+      LabelC.caption := 'Root: ' + FloatToStr(c);
+      exit;
+    end;
+
+    if Abs(tabminus2) < Eps then
+    begin
+      c := xLeft;
+      LabelC.caption := 'Root: '+ FloatTostr(c);
+      exit;
+    end;
+
+    if tabplus1 * tabplus2 < 0 then
+    begin
+      a := xRight - step;
+      EditA.text := FloatToStr(a);
+      b := xRight;
+      EditB.text := FloatToStr(b);
+      break;
+    end
+
+    else if tabminus1 * tabminus2 < 0 then
+    begin
+      a := xLeft;
+      EditA.text := FloatToStr(a);
+      b := xLeft + step;
+      EditB.text := FloatToStr(b);
+      break;
+    end
+
+    else
+    begin
+      tabplus1 := tabplus2;
+      tabminus1 := tabminus2;
+    end;
+  end;
+end;
+
+end.

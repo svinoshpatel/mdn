@@ -1,0 +1,99 @@
+unit Unit1;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls;
+
+type
+  TForm1 = class(TForm)
+    ButtonSolve: TButton;
+    ButtonExit: TButton;
+    ButtonStep: TButton;
+    EditStep: TEdit;
+    LabelStep: TLabel;
+    EditA: TEdit;
+    EditB: TEdit;
+    EditEps: TEdit;
+    LabelA: TLabel;
+    LabelB: TLabel;
+    LabelEps: TLabel;
+    LabelC: TLabel;
+    LabelIterations: TLabel;
+    procedure ButtonSolveClick(Sender: TObject);
+    procedure ButtonExitClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+
+implementation
+
+{$R *.dfm}
+
+Function f(x : Real) : Real;
+begin
+  // f := x * x - 4
+  f := x*x*x - 6*x*x + 11*x - 6
+end;
+
+procedure TForm1.ButtonExitClick(Sender: TObject);
+begin
+  exit;
+end;
+
+procedure TForm1.ButtonSolveClick(Sender: TObject);
+var
+  a, b, c, Eps, Fa, Fb, Fc : Real;
+  counter : Integer;
+  flag : Boolean;
+begin
+  counter := 0;
+  a := StrToFloat(EditA.text);
+  b := StrToFloat(EditB.text);
+  Eps := StrToFloat(EditEps.text);
+
+
+  repeat
+  Fa := f(a);
+  Fb := f(b);
+
+  if Abs(Fa) < Eps then
+  begin
+    c := a;
+    break;
+  end;
+
+  if Abs(Fb) < Eps then
+  begin
+    c := b;
+    break;
+  end;
+
+  if Fa * Fb < 0 then
+  begin
+    counter := counter + 1;
+    c := a + 0.5*(b - a);
+    Fc := F(c);
+    if Fa * Fc < 0 then
+      b := c
+    else
+      a := c
+  end
+  else
+  begin
+    LabelC.caption := 'Root is absent on the given interval';
+    flag := true;
+  end;
+  until b - a < Eps;
+
+  if flag = false then
+    labelC.caption := 'x = ' + FloatToStr(c);
+
+end;
+end.
