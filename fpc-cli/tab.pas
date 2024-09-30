@@ -93,7 +93,7 @@ begin
       writeln('Root is absent on the given interval');
       exit
     end
-  until b - a < Eps;
+  until Abs(b - a) < Eps;
 
   writeln('Root: ', c:0:10);
   write('Iterations: ', counter);
