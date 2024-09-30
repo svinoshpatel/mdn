@@ -93,7 +93,7 @@ begin
     flag := true;
     break;
   end;
-  until b - a < Eps;
+  until Abs(b - a) < Eps;
 
   if flag = false then
     labelC.caption := 'Root: ' + FloatToStr(c);
